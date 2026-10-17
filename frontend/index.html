@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/police-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SurakshaNet — National Police GIS Surveillance &amp; CCTV Mapping Portal</title>
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="geolocation=(self), camera=(), microphone=()" />
+    <meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://unpkg.com;
+        worker-src 'self' blob:;
+        child-src 'self' blob:;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com;
+        font-src 'self' https://fonts.gstatic.com https://tiles.openfreemap.org https://*.openfreemap.org data:;
+        img-src 'self' data: blob:
+          https://*.tile.openstreetmap.org
+          https://*.basemaps.cartocdn.com
+          https://tiles.openfreemap.org
+          https://*.openfreemap.org
+          https://server.arcgisonline.com
+          https://*.arcgisonline.com
+          https://*.supabase.co
+          https://*.onrender.com
+          https://api.qrserver.com;
+        connect-src 'self'
+          http://localhost:8088
+          https://*.onrender.com
+          https://tiles.openfreemap.org
+          https://*.openfreemap.org
+          https://server.arcgisonline.com
+          https://*.arcgisonline.com
+          https://*.tile.openstreetmap.org
+          https://*.basemaps.cartocdn.com
+          https://demotiles.maplibre.org
+          https://*.supabase.co
+          https://*.pooler.supabase.com;
+        frame-ancestors 'none';
+      "
+    />
+    <!-- Google Fonts Sofia Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,300;0,400;0,450;0,500;0,600;0,700;0,800;1,400;1,500&family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  </head>
+  <body class="bg-[#F3F0EE] text-[#141413] font-sans antialiased min-h-screen selection:bg-[#CF4500] selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

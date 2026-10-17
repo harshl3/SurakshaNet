@@ -1,0 +1,26 @@
+# ============================================================
+# DEVELOPMENT PROFILE — application-dev.yml
+# ⚠️ This file contains DEV-ONLY defaults. DO NOT use in prod.
+# ============================================================
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Dev-only safe dummy JWT secret (256-bit hex)
+app:
+  jwt:
+    secret: 6e65769032a4f1b44e69c9f1b3d8a7e2f50c3b9d1a6e4f7c2b8d3a91f5e70c4
+  cors:
+    allowed-origins: http://localhost:3000,http://127.0.0.1:3000
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --canvas: #F3F0EE;
+  --lifted: #FCFBFA;
+  --bone: #F4F4F4;
+  --white: #FFFFFF;
+  
+  --ink: #141413;
+  --charcoal: #262627;
+  --slate-gray: #696969;
+  --dust: #D1CDC7;
+  
+  --signal-orange: #CF4500;
+  --signal-orange-light: #F37338;
+  --clay: #9A3A0A;
+  --link-blue: #3860BE;
+
+  --emerald-500: #10B981;
+  --amber-500: #F59E0B;
+  --red-600: #DC2626;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: "Sofia Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+@layer components {
+  /* Stadium & Card Containers */
+  .mc-stadium {
+    @apply bg-[#FCFBFA] border border-[#E5DFD9] rounded-[28px] sm:rounded-[36px] md:rounded-[40px] shadow-mc-card transition-all duration-200;
+  }
+  
+  .mc-stadium-hover {
+    @apply hover:border-[#D1CDC7] hover:shadow-mc-elevated;
+  }
+  
+  .mc-card {
+    @apply bg-[#FCFBFA] border border-[#E5DFD9] rounded-[24px] md:rounded-[32px] shadow-mc-card transition-all duration-200;
+  }
+
+  /* Eyebrow Label with Identity Dot */
+  .mc-eyebrow {
+    @apply text-xs md:text-[13px] font-bold tracking-[+0.04em] uppercase text-[#696969] flex items-center gap-1.5;
+  }
+  
+  .mc-eyebrow-dot {
+    @apply w-2 h-2 rounded-full bg-[#CF4500] shrink-0;
+  }
+
+  /* Mastercard Inspired Buttons */
+  .mc-btn-primary {
+    @apply bg-[#141413] hover:bg-[#262627] active:scale-[0.99] text-[#F3F0EE] font-medium px-5 py-2.5 rounded-[20px] text-sm tracking-[-0.02em] transition-all duration-150 flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .mc-btn-secondary {
+    @apply bg-white hover:bg-[#F3F0EE] active:scale-[0.99] text-[#141413] border-[1.5px] border-[#141413] font-medium px-5 py-2.5 rounded-[20px] text-sm tracking-[-0.02em] transition-all duration-150 flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .mc-btn-signal {
+    @apply bg-[#CF4500] hover:bg-[#B53C00] active:scale-[0.99] text-white font-medium px-5 py-2.5 rounded-[24px] text-sm transition-all duration-150 flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  /* Satellite Micro-CTA (Circular action attached to portraits) */
+  .satellite-cta {
+    @apply w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white text-[#141413] shadow-md border border-[#E5DFD9] hover:bg-[#141413] hover:text-[#F3F0EE] flex items-center justify-center transition-all duration-150 cursor-pointer shrink-0;
+  }
+
+  /* Input Controls */
+  .mc-input {
+    @apply bg-white border border-[#D1CDC7] text-[#141413] placeholder-[#696969] rounded-[20px] px-4 py-2 text-sm focus:outline-none focus:border-[#141413] focus:ring-2 focus:ring-[#141413]/10 transition-all;
+  }
+
+  /* Status Badges */
+  .badge-approved, .badge-active, .badge-online {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#EAF7EE] text-[#0A7334] border border-[#BDE7CA];
+  }
+  
+  .badge-pending {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#FEF6E9] text-[#B56708] border border-[#FADBA6];
+  }
+  
+  .badge-rejected, .badge-offline, .badge-danger {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#FDF0EE] text-[#CF4500] border border-[#F8C6BC];
+  }
+
+  .badge-pill {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white text-[#141413] border border-[#D1CDC7];
+  }
+
+  /* Backward compatibility for previous classes */
+  .suraksha-card {
+    @apply mc-stadium;
+  }
+  .suraksha-card-hover {
+    @apply mc-stadium-hover;
+  }
+  .suraksha-input {
+    @apply mc-input;
+  }
+  .suraksha-btn-primary {
+    @apply mc-btn-primary;
+  }
+  .suraksha-btn-secondary {
+    @apply mc-btn-secondary;
+  }
+  .suraksha-btn-danger {
+    @apply mc-btn-signal;
+  }
+  .suraksha-btn-success {
+    @apply bg-[#0A7334] hover:bg-[#075928] text-white font-medium px-5 py-2.5 rounded-[20px] text-sm flex items-center justify-center gap-2;
+  }
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Leaflet Container in Stadium Frame */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  background-color: #F3F0EE !important;
+  z-index: 10;
+  font-family: inherit;
+}
+
+@media (min-width: 768px) {
+  .leaflet-container {
+    border-radius: 36px;
+  }
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(20, 20, 19, 0.12), 0 2px 6px rgba(20, 20, 19, 0.04);
+  border: 1px solid #E5DFD9;
+  background: #FCFBFA;
+  padding: 0;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  top: 10px;
+  right: 12px;
+  color: #696969;
+  font-size: 16px;
+  padding: 4px;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: #141413;
+}
+
+/* MapLibre 3D Popup Styling Matching Leaflet Stadium Theme */
+.maplibregl-popup {
+  z-index: 100 !important;
+  font-family: inherit;
+  pointer-events: auto;
+}
+
+.maplibregl-popup-content {
+  border-radius: 24px !important;
+  box-shadow: 0 16px 40px rgba(20, 20, 19, 0.16), 0 2px 6px rgba(20, 20, 19, 0.06) !important;
+  border: 1px solid #E5DFD9 !important;
+  background: #FCFBFA !important;
+  padding: 14px !important;
+  overflow: hidden !important;
+  line-height: 1.4 !important;
+}
+
+.maplibregl-popup-close-button {
+  top: 10px !important;
+  right: 12px !important;
+  color: #696969 !important;
+  font-size: 18px !important;
+  padding: 4px 6px !important;
+  border-radius: 9999px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+
+.maplibregl-popup-close-button:hover {
+  color: #141413 !important;
+  background-color: #F3F0EE !important;
+}
+
+.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+  border-bottom-color: #FCFBFA !important;
+}
+
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+  border-top-color: #FCFBFA !important;
+}
+
+
+

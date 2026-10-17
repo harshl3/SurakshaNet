@@ -1,0 +1,1 @@
+-- Schema initialization managed by Hibernate JPA

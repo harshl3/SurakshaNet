@@ -1,0 +1,70 @@
+# ============================================================
+# .gitignore — Police Camera Mapping System
+# ============================================================
+
+# -------------------------------------------------------
+# SECURITY: Never commit environment files with secrets
+# -------------------------------------------------------
+.env
+.env.local
+.env.production
+.env.*.local
+*.env
+
+# -------------------------------------------------------
+# Java / Maven — Backend
+# -------------------------------------------------------
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+!backend/.mvn/wrapper/maven-wrapper.properties
+backend/*.jar
+backend/*.war
+backend/*.ear
+backend/uploads/
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+*.launch
+
+# Spring Boot
+backend/HELP.md
+
+# -------------------------------------------------------
+# Node.js / Vite — Frontend
+# -------------------------------------------------------
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local vite cache
+frontend/.cache/
+
+# -------------------------------------------------------
+# OS generated files
+# -------------------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# -------------------------------------------------------
+# VS Code
+# -------------------------------------------------------
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/*.code-snippets
