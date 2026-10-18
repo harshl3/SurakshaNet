@@ -66,5 +66,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is needed to capture CCTV camera installation photos and scan camera QR codes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is needed to select CCTV camera installation photos.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Precise location is required to map CCTV cameras at exact GPS coordinates.</string>
 </dict>
 </plist>
