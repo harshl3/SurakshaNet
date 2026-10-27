@@ -139,8 +139,8 @@ class _EnvironmentConfigSheetState extends State<EnvironmentConfigSheet> {
             ),
             _buildRadioTile(
               type: EnvironmentType.androidEmulator,
-              title: 'Android Emulator',
-              subtitle: EnvConfig.defaultEmulatorUrl,
+              title: 'Local Dev (Emulator / Simulator)',
+              subtitle: EnvConfig.localDevBackendUrl,
             ),
             _buildRadioTile(
               type: EnvironmentType.localLan,

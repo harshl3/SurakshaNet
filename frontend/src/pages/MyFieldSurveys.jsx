@@ -72,17 +72,9 @@ export const MyFieldSurveys = () => {
           </h1>
 
           <p className="text-sm md:text-base text-[#696969] font-normal leading-relaxed">
-            Monitor all CCTV points surveyed by your field unit, inspect approval status, or register new camera surveillance nodes.
+            Monitor all CCTV points surveyed by your field unit and inspect approval status. Camera registrations are conducted via the mobile field surveyor app (4th tab: Survey).
           </p>
         </div>
-
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="mc-btn-primary relative z-10 shrink-0 self-start md:self-auto"
-        >
-          <Plus className="w-4 h-4 text-[#F37338]" />
-          <span>Survey New Camera</span>
-        </button>
       </div>
 
       {/* Verification Status Metric Cards */}
@@ -142,7 +134,7 @@ export const MyFieldSurveys = () => {
           <div className="col-span-full mc-stadium p-12 text-center text-[#696969] space-y-2">
             <ClipboardList className="w-12 h-12 text-[#696969] mx-auto opacity-50" />
             <h3 className="text-lg font-medium text-[#141413]">No Field Surveys Recorded Yet</h3>
-            <p className="text-xs text-[#696969]">Click 'Survey New Camera' above to register your first CCTV point.</p>
+            <p className="text-xs text-[#696969]">Use the mobile field surveyor app (4th tab 'Survey') to register CCTV points on site.</p>
           </div>
         ) : (
           displayList.map((cam, idx) => (

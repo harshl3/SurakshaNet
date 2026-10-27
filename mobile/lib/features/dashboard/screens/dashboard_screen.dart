@@ -195,71 +195,93 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildActionTile(
-                      context,
-                      icon: Icons.camera_alt_rounded,
-                      title: 'Field Survey',
-                      subtitle: 'Register CCTV',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => const CameraRegistrationScreen()),
-                        );
-                      },
+              if (user?.isSurveyor == true || (user?.isAdmin != true && user?.isOfficer != true)) ...[
+                // Surveyor Dashboard: Field Survey & Scan QR
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildActionTile(
+                        context,
+                        icon: Icons.camera_alt_rounded,
+                        title: 'Field Survey',
+                        subtitle: 'Register CCTV',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (ctx) => const CameraRegistrationScreen()),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildActionTile(
-                      context,
-                      icon: Icons.qr_code_scanner_rounded,
-                      title: 'Scan QR',
-                      subtitle: 'Lookup Code',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => const QrScannerScreen()),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildActionTile(
-                      context,
-                      icon: Icons.radar_rounded,
-                      title: 'Open Case',
-                      subtitle: 'Auto GIS Match',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => const InvestigationCreateScreen()),
-                        );
-                      },
-                    ),
-                  ),
-                  if (user?.isAdmin == true) ...[
                     const SizedBox(width: 10),
                     Expanded(
                       child: _buildActionTile(
                         context,
-                        icon: Icons.verified_user_outlined,
-                        title: 'Verification',
-                        subtitle: 'Admin Queue',
+                        icon: Icons.qr_code_scanner_rounded,
+                        title: 'Scan QR',
+                        subtitle: 'Lookup Code',
                         onTap: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (ctx) => const VerificationQueueScreen()),
+                            MaterialPageRoute(builder: (ctx) => const QrScannerScreen()),
                           );
                         },
                       ),
                     ),
                   ],
+                ),
+              ] else ...[
+                // Admin & Officer Dashboard: No camera registration shortcut (done exclusively by Field Surveyors)
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildActionTile(
+                        context,
+                        icon: Icons.qr_code_scanner_rounded,
+                        title: 'Scan QR',
+                        subtitle: 'Lookup Code',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (ctx) => const QrScannerScreen()),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildActionTile(
+                        context,
+                        icon: Icons.radar_rounded,
+                        title: 'Open Case',
+                        subtitle: 'Auto GIS Match',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (ctx) => const InvestigationCreateScreen()),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                if (user?.isAdmin == true) ...[
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildActionTile(
+                          context,
+                          icon: Icons.verified_user_outlined,
+                          title: 'Verification',
+                          subtitle: 'Admin Queue',
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (ctx) => const VerificationQueueScreen()),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
-              ),
+              ],
               const SizedBox(height: 20),
 
               // Real Server KPI Metrics

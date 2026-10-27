@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/config/env_config.dart';
+import '../../../core/network/api_client.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_banner.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -21,6 +22,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Warm up backend asynchronously in the background so it's ready when user submits
+    ApiClient().warmUpBackend();
+  }
+
+  @override
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
@@ -30,7 +38,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _fillUsername(String user) {
     setState(() {
       _usernameController.text = user;
-      _passwordController.clear();
+      if (user == 'admin') {
+        _passwordController.text = 'admin123';
+      } else if (user == 'surveyor1') {
+        _passwordController.text = 'surveyor123';
+      } else {
+        _passwordController.text = 'officer123';
+      }
     });
   }
 

@@ -20,7 +20,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> checkSession() async {
-    state = state.copyWith(status: AuthStatus.loading);
+    // Local secure-storage restore only — do not use AuthStatus.loading (that hid the login UI).
     try {
       final user = await _repository.restoreSession();
       if (user != null) {
@@ -35,7 +35,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       state = state.copyWith(
         status: AuthStatus.unauthenticated,
-        errorMessage: e.toString(),
+        errorMessage: null,
       );
     }
   }
@@ -53,6 +53,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
         errorMessage: null,
       );
       return true;
+    } on ApiException catch (e) {
+      state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: e.message,
+      );
+      return false;
     } catch (e) {
       state = state.copyWith(
         status: AuthStatus.error,

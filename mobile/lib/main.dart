@@ -46,12 +46,9 @@ class PoliceCameraApp extends ConsumerWidget {
       case AuthStatus.authenticated:
         return const RoleNavigationShell();
       case AuthStatus.loading:
-        // If transitioning from initial, keep loading screen
+        // Keep login visible while sign-in runs (button shows spinner).
         if (authState.user == null) {
-          return const Scaffold(
-            backgroundColor: AppColors.canvasCream,
-            body: LoadingView(message: 'Authenticating with central server...'),
-          );
+          return const LoginScreen();
         }
         return const RoleNavigationShell();
       case AuthStatus.unauthenticated:

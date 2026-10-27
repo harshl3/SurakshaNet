@@ -23,8 +23,8 @@ class ApiClient {
     _dio = Dio(
       BaseOptions(
         connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 20),
-        sendTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 25),
+        sendTimeout: const Duration(seconds: 15),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -246,6 +246,30 @@ class ApiClient {
     }
   }
 
+  /// Wakes a sleeping Render instance before auth (production only; local backends skip this).
+  Future<void> warmUpBackend({Duration? maxWait}) async {
+    if (EnvConfig().currentEnv != EnvironmentType.production) {
+      return;
+    }
+    final wait = maxWait ?? const Duration(seconds: 15);
+    try {
+      await _dio
+          .get(
+            ApiEndpoints.health,
+            options: Options(
+              connectTimeout: wait,
+              receiveTimeout: wait,
+              sendTimeout: wait,
+            ),
+          )
+          .timeout(wait + const Duration(seconds: 1));
+    } on DioException catch (e) {
+      debugPrint('Backend warm-up probe: ${e.type} (${e.message})');
+    } on TimeoutException catch (e) {
+      debugPrint('Backend warm-up timed out: $e');
+    }
+  }
+
   // Test Server Health Probe
   Future<Map<String, dynamic>> checkHealth() async {
     try {
@@ -268,8 +292,23 @@ class ApiClient {
         error.type == DioExceptionType.sendTimeout ||
         error.type == DioExceptionType.receiveTimeout) {
       message = 'Request timed out. The server took too long to respond.';
+      if (EnvConfig().currentEnv == EnvironmentType.production) {
+        message +=
+            ' Render Cloud may be waking from sleep (retry in a moment). '
+            'For local Spring Boot, switch to Android Emulator (${EnvConfig.defaultEmulatorUrl}) '
+            '— same backend the website uses via localhost:8088.';
+      } else if (EnvConfig().currentEnv == EnvironmentType.androidEmulator) {
+        message +=
+            ' Start the Spring Boot backend on your PC (port 8088), then retry. '
+            'The website uses the same server through Vite\'s /api proxy.';
+      }
     } else if (error.type == DioExceptionType.connectionError) {
       message = 'Unable to reach backend at ${EnvConfig().baseUrl}. Please ensure the server is running.';
+      if (EnvConfig().currentEnv == EnvironmentType.androidEmulator) {
+        message +=
+            ' Run: cd backend && .\\mvnw.cmd spring-boot:run (Windows) or ./mvnw spring-boot:run, '
+            'then use environment "${EnvConfig().envLabel}".';
+      }
     } else if (error.response?.data != null) {
       final resData = error.response!.data;
       if (resData is Map<String, dynamic>) {

@@ -15,8 +15,18 @@ class EnvConfig extends ChangeNotifier {
   EnvConfig._internal();
 
   static const String defaultProdUrl = 'https://cameramapping-api.onrender.com/api/v1';
+  /// Android emulator maps host machine localhost to 10.0.2.2 (same as Vite → localhost:8088 on web).
   static const String defaultEmulatorUrl = 'http://10.0.2.2:8088/api/v1';
+  static const String defaultIosSimulatorUrl = 'http://127.0.0.1:8088/api/v1';
   static const String defaultLocalLanUrl = 'http://192.168.1.5:8088/api/v1';
+
+  /// Host-reachable Spring Boot URL for simulators/emulators during local development.
+  static String get localDevBackendUrl {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return defaultIosSimulatorUrl;
+    }
+    return defaultEmulatorUrl;
+  }
 
   EnvironmentType _currentEnv = EnvironmentType.production;
   String _customUrl = '';
@@ -30,7 +40,7 @@ class EnvConfig extends ChangeNotifier {
       case EnvironmentType.production:
         return defaultProdUrl;
       case EnvironmentType.androidEmulator:
-        return defaultEmulatorUrl;
+        return localDevBackendUrl;
       case EnvironmentType.localLan:
         return _customUrl.isNotEmpty ? _customUrl : defaultLocalLanUrl;
       case EnvironmentType.custom:
@@ -43,6 +53,9 @@ class EnvConfig extends ChangeNotifier {
       case EnvironmentType.production:
         return 'Production Cloud';
       case EnvironmentType.androidEmulator:
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          return 'iOS Simulator (127.0.0.1)';
+        }
         return 'Android Emulator (10.0.2.2)';
       case EnvironmentType.localLan:
         return 'Local Network (LAN)';
@@ -58,6 +71,9 @@ class EnvConfig extends ChangeNotifier {
       final envIndex = prefs.getInt(AppConstants.keySelectedEnv);
       if (envIndex != null && envIndex >= 0 && envIndex < EnvironmentType.values.length) {
         _currentEnv = EnvironmentType.values[envIndex];
+      } else if (kDebugMode) {
+        // Match local web dev: Vite proxies /api → http://localhost:8088 (see frontend/vite.config.js).
+        _currentEnv = EnvironmentType.androidEmulator;
       }
       _customUrl = prefs.getString(AppConstants.keySavedBaseUrl) ?? '';
     } catch (e) {

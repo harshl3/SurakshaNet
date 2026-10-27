@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -10,9 +11,25 @@ class SecureStorageService {
   SecureStorageService._internal();
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(),
+    aOptions: AndroidOptions(
+      resetOnError: true,
+    ),
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
+
+  static const Duration _readTimeout = Duration(seconds: 2);
+
+  Future<String?> _readKey(String key) async {
+    try {
+      return await _storage.read(key: key).timeout(_readTimeout);
+    } on TimeoutException {
+      debugPrint('Secure storage read timed out for key: $key');
+      return null;
+    } catch (e) {
+      debugPrint('Secure storage read failed for key $key: $e');
+      return null;
+    }
+  }
 
   // In-memory fallback if native keystore fails
   final Map<String, String> _memoryCache = {};
@@ -27,14 +44,16 @@ class SecureStorageService {
     _memoryCache[AppConstants.keyUserData] = jsonEncode(user.toJson());
 
     try {
-      await _storage.write(key: AppConstants.keyAccessToken, value: accessToken);
-      await _storage.write(key: AppConstants.keyRefreshToken, value: refreshToken);
-      await _storage.write(
-        key: AppConstants.keyUserData,
-        value: jsonEncode(user.toJson()),
-      );
+      await Future.wait([
+        _storage.write(key: AppConstants.keyAccessToken, value: accessToken),
+        _storage.write(key: AppConstants.keyRefreshToken, value: refreshToken),
+        _storage.write(
+          key: AppConstants.keyUserData,
+          value: jsonEncode(user.toJson()),
+        ),
+      ]).timeout(const Duration(seconds: 2));
     } catch (e) {
-      debugPrint('Warning: secure storage write failed, using cache: $e');
+      debugPrint('Warning: secure storage write failed or timed out, using cache: $e');
     }
   }
 
@@ -43,7 +62,7 @@ class SecureStorageService {
       return _memoryCache[AppConstants.keyAccessToken];
     }
     try {
-      final token = await _storage.read(key: AppConstants.keyAccessToken);
+      final token = await _readKey(AppConstants.keyAccessToken);
       if (token != null) _memoryCache[AppConstants.keyAccessToken] = token;
       return token;
     } catch (e) {
@@ -57,7 +76,7 @@ class SecureStorageService {
       return _memoryCache[AppConstants.keyRefreshToken];
     }
     try {
-      final token = await _storage.read(key: AppConstants.keyRefreshToken);
+      final token = await _readKey(AppConstants.keyRefreshToken);
       if (token != null) _memoryCache[AppConstants.keyRefreshToken] = token;
       return token;
     } catch (e) {
@@ -74,7 +93,7 @@ class SecureStorageService {
       } catch (_) {}
     }
     try {
-      final raw = await _storage.read(key: AppConstants.keyUserData);
+      final raw = await _readKey(AppConstants.keyUserData);
       if (raw != null) {
         _memoryCache[AppConstants.keyUserData] = raw;
         final map = jsonDecode(raw);
@@ -89,9 +108,11 @@ class SecureStorageService {
   Future<void> clearSession() async {
     _memoryCache.clear();
     try {
-      await _storage.delete(key: AppConstants.keyAccessToken);
-      await _storage.delete(key: AppConstants.keyRefreshToken);
-      await _storage.delete(key: AppConstants.keyUserData);
+      await Future.wait([
+        _storage.delete(key: AppConstants.keyAccessToken),
+        _storage.delete(key: AppConstants.keyRefreshToken),
+        _storage.delete(key: AppConstants.keyUserData),
+      ]).timeout(const Duration(seconds: 2));
     } catch (e) {
       debugPrint('Failed to clear secure storage: $e');
     }
