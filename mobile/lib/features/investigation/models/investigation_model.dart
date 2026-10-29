@@ -9,6 +9,7 @@ class InvestigationCaseModel {
   final String? crimeLocationName;
   final double latitude;
   final double longitude;
+  final double searchRadiusMeters;
   final String? incidentDate;
   final String? description;
   final String status;
@@ -29,6 +30,7 @@ class InvestigationCaseModel {
     this.crimeLocationName,
     required this.latitude,
     required this.longitude,
+    this.searchRadiusMeters = 500.0,
     this.incidentDate,
     this.description,
     this.status = 'OPEN',
@@ -55,6 +57,7 @@ class InvestigationCaseModel {
       crimeLocationName: json['crimeLocationName'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
+      searchRadiusMeters: (json['searchRadiusMeters'] as num?)?.toDouble() ?? 500.0,
       incidentDate: json['incidentDate'] as String?,
       description: json['description'] as String?,
       status: json['status'] as String? ?? 'OPEN',

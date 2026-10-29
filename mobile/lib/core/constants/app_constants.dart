@@ -15,11 +15,13 @@ class AppConstants {
   static const String satelliteLabelsTileUrl =
       'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
 
-  // 2D Street Map (CartoDB Voyager; OpenStreetMap data, no API key required)
+  // 2D Street Map (ESRI World Street Map - 100% free, NO API key required, NO watermarks, global Akamai CDN)
   static const String streetTileUrl =
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
+  static const String streetTileFallbackUrl =
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}';
   static const String osmTileUrl =
-      'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
 
   // Default Geospatial Center (Nagpur, Maharashtra, India - central police jurisdiction)
   static const double defaultLatitude = 21.1458;

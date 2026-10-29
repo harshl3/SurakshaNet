@@ -6,6 +6,7 @@ import '../../../core/widgets/state_views.dart';
 import '../../camera/screens/camera_detail_screen.dart';
 import '../models/investigation_model.dart';
 import '../providers/investigation_provider.dart';
+import 'investigation_radar_map_screen.dart';
 
 class InvestigationDetailScreen extends ConsumerStatefulWidget {
   final int caseId;
@@ -241,6 +242,83 @@ class _InvestigationDetailScreenState extends ConsumerState<InvestigationDetailS
                   ],
                 ],
               ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // GIS Investigation Radar Map Card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF141413), Color(0xFF262524)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFCF4500).withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFCF4500), width: 1.5),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.radar_rounded, color: Color(0xFFF37338), size: 24),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'GIS Investigation Radar',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${c.searchRadiusMeters.round()}m radius around incident point',
+                        style: const TextStyle(
+                          color: Color(0xFFD1CDC7),
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFCF4500),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => InvestigationRadarMapScreen(caseItem: c),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.map_rounded, size: 16),
+                  label: const Text(
+                    'Focus Radar',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),

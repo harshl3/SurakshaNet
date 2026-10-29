@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/network/dns_fallback_client.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../../camera/models/camera_model.dart';
@@ -425,14 +426,15 @@ class _CameraMapScreenState extends ConsumerState<CameraMapScreen> {
             },
           ),
           children: [
-            // 2D MODE: Street map with OpenStreetMap as a network-error fallback.
+            // 2D MODE: Standard Street map (ESRI World Street Map, 100% free, no API key required)
             if (_currentMode == MapMode.mode2d) ...[
               TileLayer(
                 key: const ValueKey('tile_layer_2d_street'),
                 urlTemplate: AppConstants.streetTileUrl,
-                fallbackUrl: AppConstants.osmTileUrl,
-                subdomains: const ['a', 'b', 'c', 'd'],
-                userAgentPackageName: 'com.police.cameramapping',
+                fallbackUrl: AppConstants.streetTileFallbackUrl,
+                userAgentPackageName: 'in.gov.mahapolice.surakshanet',
+                tileProvider: createResilientTileProvider(),
+                evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
                 maxZoom: 19,
               ),
             ],
@@ -443,22 +445,27 @@ class _CameraMapScreenState extends ConsumerState<CameraMapScreen> {
                 TileLayer(
                   key: const ValueKey('tile_layer_3d_satellite'),
                   urlTemplate: AppConstants.satelliteTileUrl,
-                  userAgentPackageName: 'com.police.cameramapping',
+                  userAgentPackageName: 'in.gov.mahapolice.surakshanet',
+                  tileProvider: createResilientTileProvider(),
+                  evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
                   maxZoom: 18,
                 ),
                 TileLayer(
                   key: const ValueKey('tile_layer_3d_labels'),
                   urlTemplate: AppConstants.satelliteLabelsTileUrl,
-                  userAgentPackageName: 'com.police.cameramapping',
+                  userAgentPackageName: 'in.gov.mahapolice.surakshanet',
+                  tileProvider: createResilientTileProvider(),
+                  evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
                   maxZoom: 18,
                 ),
               ] else ...[
                 TileLayer(
                   key: const ValueKey('tile_layer_3d_daylight'),
                   urlTemplate: AppConstants.streetTileUrl,
-                  fallbackUrl: AppConstants.osmTileUrl,
-                  subdomains: const ['a', 'b', 'c', 'd'],
-                  userAgentPackageName: 'com.police.cameramapping',
+                  fallbackUrl: AppConstants.streetTileFallbackUrl,
+                  userAgentPackageName: 'in.gov.mahapolice.surakshanet',
+                  tileProvider: createResilientTileProvider(),
+                  evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
                   maxZoom: 19,
                 ),
               ],
