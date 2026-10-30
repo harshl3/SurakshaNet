@@ -43,8 +43,8 @@ class _CameraMapScreenState extends ConsumerState<CameraMapScreen> {
   String _registryStatusFilter = 'ALL';
   String _registryViewMode = 'table'; // 'table' or 'cards'
 
-  MapMode _currentMode = MapMode.mode3d; // Defaults to 3D Recon Mode
-  MapStyle _currentStyle = MapStyle.satellite; // Defaults to Satellite Imagery
+  MapMode _currentMode = MapMode.mode2d; // Defaults to 2D Street Grid Mode
+  MapStyle _currentStyle = MapStyle.daylight;
   double _currentRotation = 0.0;
   Timer? _clockTimer;
   String _istClock = '';

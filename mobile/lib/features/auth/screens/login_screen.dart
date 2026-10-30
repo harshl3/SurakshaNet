@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/config/env_config.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_banner.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../providers/auth_provider.dart';
@@ -72,80 +70,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Environment Selector Header Chip
-                Center(
-                  child: InkWell(
-                    onTap: () async {
-                      await EnvironmentConfigSheet.show(context);
-                      setState(() {});
-                    },
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.liftedCream,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.subtleBorder),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.statusActiveGreen,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            EnvConfig().envLabel,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.inkBlack,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          const Icon(Icons.arrow_drop_down, size: 16, color: AppColors.slateGray),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 28),
-
-                // Police Badge & Title Header
+                // Official SurakshaNet Department Emblem & Title
                 Center(
                   child: Container(
-                    width: 76,
-                    height: 76,
+                    width: 82,
+                    height: 82,
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.inkBlack,
+                      color: Colors.white,
                       shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFFE5DFD9), width: 1.5),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
+                          blurRadius: 18,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.local_police_rounded,
-                      size: 38,
-                      color: AppColors.canvasCream,
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.shield_rounded,
+                        size: 42,
+                        color: AppColors.signalOrange,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 16),
                 const Text(
-                  'POLICE SURVEILLANCE',
+                  'SurakshaNet',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
                     letterSpacing: -0.5,
                     color: AppColors.inkBlack,
                   ),

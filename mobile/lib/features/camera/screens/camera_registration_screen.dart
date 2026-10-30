@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -80,9 +81,9 @@ class _CameraRegistrationScreenState extends ConsumerState<CameraRegistrationScr
 
   // Demo sample owners from frontend (Image 4)
   final List<Map<String, String>> _sampleOwners = [
-    {'label': 'Sitabuldi Traders', 'number': '+91 98711 44444'},
-    {'label': 'Apex Retail', 'number': '+91 98711 77777'},
-    {'label': 'Shopkeepers Assn', 'number': '+91 98765 11111'},
+    {'label': 'Sitabuldi Traders', 'number': '9871144444'},
+    {'label': 'Apex Retail', 'number': '9871177777'},
+    {'label': 'Shopkeepers Assn', 'number': '9876511111'},
   ];
 
   @override
@@ -186,10 +187,14 @@ class _CameraRegistrationScreenState extends ConsumerState<CameraRegistrationScr
   }
 
   Future<void> _verifyOwnerMobile([String? phone]) async {
-    final search = phone ?? _ownerSearchController.text.trim();
-    if (search.length < 4) {
+    final rawSearch = phone ?? _ownerSearchController.text.trim();
+    final search = rawSearch.replaceAll(RegExp(r'\D'), '');
+    if (search.length != 10) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid owner contact number to verify.')),
+        const SnackBar(
+          content: Text('Please enter a valid 10-digit mobile number to verify.'),
+          backgroundColor: Color(0xFFCF4500),
+        ),
       );
       return;
     }
@@ -621,12 +626,18 @@ class _CameraRegistrationScreenState extends ConsumerState<CameraRegistrationScr
                         Expanded(
                           child: TextField(
                             controller: _ownerSearchController,
-                            keyboardType: TextInputType.phone,
-                            style: const TextStyle(fontSize: 13, fontFamily: 'monospace'),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(10),
+                            ],
+                            maxLength: 10,
+                            buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                            style: const TextStyle(fontSize: 13, fontFamily: 'monospace', letterSpacing: 0.8),
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.phone_rounded, size: 18, color: Color(0xFF696969)),
-                              hintText: 'e.g. 9871144444 or +91 98711 44444',
-                              hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF8C827A)),
+                              hintText: 'e.g. 9871144444 (10 digits)',
+                              hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF8C827A), letterSpacing: 0),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                               filled: true,
                               fillColor: const Color(0xFFF7F6F3),

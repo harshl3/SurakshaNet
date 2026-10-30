@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String appName = 'Police CCTV Mapping';
+  static const String appName = 'SurakshaNet';
   static const String appSubtitle = 'Surveillance & Investigation System';
 
   // Storage Keys

@@ -27,13 +27,13 @@ void main() async {
 
   runApp(
     const ProviderScope(
-      child: PoliceCameraApp(),
+      child: SurakshaNetApp(),
     ),
   );
 }
 
-class PoliceCameraApp extends ConsumerWidget {
-  const PoliceCameraApp({super.key});
+class SurakshaNetApp extends ConsumerWidget {
+  const SurakshaNetApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

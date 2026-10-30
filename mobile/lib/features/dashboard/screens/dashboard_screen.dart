@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/config/env_config.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_banner.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../camera/screens/camera_registration_screen.dart';
@@ -47,7 +45,19 @@ class DashboardScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.canvasCream,
       appBar: AppBar(
-        title: const Text('Police Operations Command'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/logo.png',
+              width: 24,
+              height: 24,
+              errorBuilder: (context, error, stackTrace) => const Icon(Icons.shield_rounded, size: 20),
+            ),
+            const SizedBox(width: 8),
+            const Text('SurakshaNet Command'),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.qr_code_scanner_rounded),
@@ -147,37 +157,6 @@ class DashboardScreen extends ConsumerWidget {
                           ],
                         ),
                       ],
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Server Health Diagnostic Pill
-              GestureDetector(
-                onTap: () => EnvironmentConfigSheet.show(context),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.subtleBorder),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.cloud_done_outlined, size: 18, color: AppColors.statusActiveGreen),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Backend: ${EnvConfig().envLabel}',
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.inkBlack),
-                        ),
-                      ),
-                      const Text(
-                        'Configure',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.signalOrange),
-                      ),
-                      const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.signalOrange),
                     ],
                   ),
                 ),
