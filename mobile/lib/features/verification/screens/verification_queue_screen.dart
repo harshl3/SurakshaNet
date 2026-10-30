@@ -9,6 +9,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../camera/models/camera_model.dart';
 import '../../camera/providers/camera_provider.dart';
 import '../../camera/screens/camera_detail_screen.dart';
+import '../../dashboard/providers/dashboard_provider.dart';
 import '../providers/verification_provider.dart';
 
 class VerificationQueueScreen extends ConsumerStatefulWidget {
@@ -75,6 +76,7 @@ class _VerificationQueueScreenState extends ConsumerState<VerificationQueueScree
       if (mounted) {
         ref.invalidate(verificationQueueProvider);
         ref.invalidate(cameraListProvider);
+        ref.invalidate(dashboardStatsProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(approve ? 'Camera verified and approved' : 'Camera registration rejected'),
@@ -120,27 +122,41 @@ class _VerificationQueueScreenState extends ConsumerState<VerificationQueueScree
           ),
         ],
       ),
-      body: queueAsync.when(
-        loading: () => const LoadingView(message: 'Loading pending survey submissions...'),
-        error: (err, stack) => ErrorStateView(
-          message: 'Failed to retrieve pending verification queue',
-          details: err.toString(),
-          onRetry: () => ref.refresh(verificationQueueProvider),
-        ),
-        data: (cameras) {
-          if (cameras.isEmpty) {
-            return const EmptyStateView(
-              title: 'Queue is Clear',
-              message: 'No CCTV cameras are currently awaiting verification approval.',
-              icon: Icons.check_circle_outline_rounded,
-            );
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(verificationQueueProvider);
+          await ref.read(verificationQueueProvider.future);
+        },
+        child: queueAsync.when(
+          loading: () => const LoadingView(message: 'Loading pending survey submissions...'),
+          error: (err, stack) => ErrorStateView(
+            message: 'Failed to retrieve pending verification queue',
+            details: err.toString(),
+            onRetry: () => ref.refresh(verificationQueueProvider),
+          ),
+          data: (cameras) {
+            if (cameras.isEmpty) {
+              return LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: const EmptyStateView(
+                      title: 'Queue is Clear',
+                      message: 'No CCTV cameras are currently awaiting verification approval.',
+                      icon: Icons.check_circle_outline_rounded,
+                    ),
+                  ),
+                ),
+              );
+            }
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: cameras.length,
-            separatorBuilder: (ctx, i) => const SizedBox(height: 12),
-            itemBuilder: (ctx, i) {
+            return ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              itemCount: cameras.length,
+              separatorBuilder: (ctx, i) => const SizedBox(height: 12),
+              itemBuilder: (ctx, i) {
               final camera = cameras[i];
               final isBusy = _actioningCameraId == camera.id;
 
@@ -244,6 +260,7 @@ class _VerificationQueueScreenState extends ConsumerState<VerificationQueueScree
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 }

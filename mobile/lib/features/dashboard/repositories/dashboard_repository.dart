@@ -1,6 +1,7 @@
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_endpoints.dart';
 import '../../../core/network/api_response.dart';
+import '../../camera/models/nagpur_default_cameras.dart';
 import '../models/dashboard_stats.dart';
 
 class DashboardRepository {
@@ -24,12 +25,19 @@ class DashboardRepository {
       // Offline fallback: Use default verified surveillance stats
     }
 
-    return const DashboardStats(
-      totalCameras: 52,
-      activeCameras: 49,
-      offlineCameras: 1,
-      pendingVerificationCameras: 2,
-      verifiedCameras: 51,
+    // Dynamic metrics based on current registry state
+    final total = NagpurDefaultCameras.defaultCameras.length;
+    final active = NagpurDefaultCameras.defaultCameras.where((c) => c.cameraStatus == 'ACTIVE').length;
+    final offline = NagpurDefaultCameras.defaultCameras.where((c) => c.cameraStatus != 'ACTIVE').length;
+    final pending = NagpurDefaultCameras.defaultCameras.where((c) => c.verificationStatus == 'PENDING').length;
+    final verified = NagpurDefaultCameras.defaultCameras.where((c) => c.verificationStatus == 'APPROVED').length;
+
+    return DashboardStats(
+      totalCameras: total,
+      activeCameras: active,
+      offlineCameras: offline,
+      pendingVerificationCameras: pending,
+      verifiedCameras: verified,
       totalPoliceStations: 4,
       totalUsers: 3,
       totalInvestigationCases: 3,

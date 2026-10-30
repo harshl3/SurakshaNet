@@ -7,7 +7,11 @@ import '../camera/screens/camera_registration_screen.dart';
 import '../dashboard/screens/dashboard_screen.dart';
 import '../investigation/screens/investigation_list_screen.dart';
 import '../map/screens/camera_map_screen.dart';
+import '../verification/providers/verification_provider.dart';
 import '../verification/screens/verification_queue_screen.dart';
+
+/// Global bottom navigation state provider allowing programmatic navigation across roles
+final selectedBottomNavIndexProvider = StateProvider<int>((ref) => 0);
 
 class RoleNavigationShell extends ConsumerStatefulWidget {
   const RoleNavigationShell({super.key});
@@ -17,11 +21,10 @@ class RoleNavigationShell extends ConsumerStatefulWidget {
 }
 
 class _RoleNavigationShellState extends ConsumerState<RoleNavigationShell> {
-  int _currentIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
+    final currentIndex = ref.watch(selectedBottomNavIndexProvider);
 
     final List<Widget> screens;
     final List<BottomNavigationBarItem> navItems;
@@ -124,7 +127,7 @@ class _RoleNavigationShellState extends ConsumerState<RoleNavigationShell> {
       ];
     }
 
-    final safeIndex = _currentIndex < screens.length ? _currentIndex : 0;
+    final safeIndex = currentIndex < screens.length ? currentIndex : 0;
 
     return Scaffold(
       body: IndexedStack(
@@ -139,7 +142,12 @@ class _RoleNavigationShellState extends ConsumerState<RoleNavigationShell> {
         ),
         child: BottomNavigationBar(
           currentIndex: safeIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
+          onTap: (index) {
+            ref.read(selectedBottomNavIndexProvider.notifier).state = index;
+            if (user?.isAdmin == true && index == 4) {
+              ref.invalidate(verificationQueueProvider);
+            }
+          },
           items: navItems,
         ),
       ),

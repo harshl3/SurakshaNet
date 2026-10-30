@@ -12,6 +12,9 @@ import '../../../core/network/dns_fallback_client.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../dashboard/providers/dashboard_provider.dart';
+import '../../navigation/role_navigation_shell.dart';
+import '../../verification/providers/verification_provider.dart';
 import '../models/camera_model.dart';
 import '../providers/camera_provider.dart';
 
@@ -313,6 +316,35 @@ class _CameraRegistrationScreenState extends ConsumerState<CameraRegistrationScr
     }
   }
 
+  void _resetForm() {
+    setState(() {
+      _currentStep = 1;
+      _ownerSearchController.clear();
+      _newOwnerNameController.clear();
+      _isSearchingOwner = false;
+      _ownerSearchPerformed = false;
+      _ownerFound = false;
+      _ownerVerified = false;
+      _verifiedOwnerName = '';
+      _verifiedOwnerContact = '';
+      _existingOwnerCameras = [];
+      _ownerApprovedCount = 0;
+      _ownerPendingCount = 0;
+      _cameraCodeController.clear();
+      _cameraNameController.clear();
+      _serialNumberController.clear();
+      _latitudeController.clear();
+      _longitudeController.clear();
+      _addressController.clear();
+      _areaController.clear();
+      _wardController.clear();
+      _zoneController.clear();
+      _pickedImage = null;
+      _useMapPicker = false;
+    });
+    ref.read(cameraRegistrationProvider.notifier).reset();
+  }
+
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -346,6 +378,8 @@ class _CameraRegistrationScreenState extends ConsumerState<CameraRegistrationScr
 
     if (createdCamera != null && mounted) {
       ref.invalidate(cameraListProvider);
+      ref.invalidate(verificationQueueProvider);
+      ref.invalidate(dashboardStatsProvider);
 
       showDialog(
         context: context,
@@ -402,12 +436,26 @@ class _CameraRegistrationScreenState extends ConsumerState<CameraRegistrationScr
             ],
           ),
           actions: [
-            TextButton(
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.signalOrange,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+              icon: const Icon(Icons.dashboard_rounded, size: 18),
               onPressed: () {
                 Navigator.of(ctx).pop();
-                Navigator.of(context).pop();
+                _resetForm();
+                ref.read(selectedBottomNavIndexProvider.notifier).state = 0;
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                }
               },
-              child: const Text('Return to Map & Directory', style: TextStyle(fontWeight: FontWeight.bold)),
+              label: const Text(
+                'Return to Surveyor Dashboard',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
             ),
           ],
         ),

@@ -77,7 +77,10 @@ class CameraRepository {
       };
       if (query != null && query.isNotEmpty) params['query'] = query;
       if (area != null && area.isNotEmpty) params['area'] = area;
-      if (status != null && status.isNotEmpty) params['status'] = status;
+      if (status != null && status.isNotEmpty) {
+        params['status'] = status;
+        params['cameraStatus'] = status;
+      }
       if (verificationStatus != null && verificationStatus.isNotEmpty) {
         params['verificationStatus'] = verificationStatus;
       }
@@ -93,10 +96,20 @@ class CameraRepository {
       );
 
       if (apiRes.success && apiRes.data != null) {
-        return PaginatedResponse<CameraModel>.fromJson(
+        final paginated = PaginatedResponse<CameraModel>.fromJson(
           apiRes.data!,
           CameraModel.fromJson,
         );
+        for (final item in paginated.items) {
+          final idx = NagpurDefaultCameras.defaultCameras.indexWhere(
+              (c) => c.id == item.id || c.cameraCode == item.cameraCode);
+          if (idx != -1) {
+            NagpurDefaultCameras.defaultCameras[idx] = item;
+          } else {
+            NagpurDefaultCameras.defaultCameras.insert(0, item);
+          }
+        }
+        return paginated;
       }
     } catch (e) {
       debugPrint('Camera search failed ($e), searching local registered dataset');
@@ -371,7 +384,11 @@ class CameraRepository {
       );
 
       if (apiRes.success && apiRes.data != null) {
-        return CameraModel.fromJson(apiRes.data!);
+        final created = CameraModel.fromJson(apiRes.data!);
+        NagpurDefaultCameras.defaultCameras.removeWhere(
+            (c) => c.id == created.id || c.cameraCode == created.cameraCode);
+        NagpurDefaultCameras.defaultCameras.insert(0, created);
+        return created;
       }
     } catch (e) {
       debugPrint('Live createCamera failed: $e. Creating local registered record.');
@@ -403,6 +420,8 @@ class CameraRepository {
       imageUrl: data['imageUrl'] as String?,
     );
 
+    NagpurDefaultCameras.defaultCameras.removeWhere(
+        (c) => c.cameraCode == newCam.cameraCode);
     NagpurDefaultCameras.defaultCameras.insert(0, newCam);
     return newCam;
   }
@@ -437,23 +456,75 @@ class CameraRepository {
     required String status,
     String? reason,
   }) async {
-    final response = await _apiClient.patch(
-      ApiEndpoints.cameraApproval(id),
-      data: {
-        'verificationStatus': status,
-        if (reason != null && reason.isNotEmpty) 'rejectionReason': reason,
-      },
-    );
+    try {
+      final response = await _apiClient.patch(
+        ApiEndpoints.cameraApproval(id),
+        data: {
+          'verificationStatus': status,
+          if (reason != null && reason.isNotEmpty) 'rejectionReason': reason,
+        },
+      );
 
-    final apiRes = ApiResponse<Map<String, dynamic>>.fromJson(
-      response.data as Map<String, dynamic>,
-      (raw) => raw as Map<String, dynamic>,
-    );
+      final apiRes = ApiResponse<Map<String, dynamic>>.fromJson(
+        response.data as Map<String, dynamic>,
+        (raw) => raw as Map<String, dynamic>,
+      );
 
-    if (!apiRes.success || apiRes.data == null) {
-      throw ApiException(apiRes.message.isNotEmpty ? apiRes.message : 'Approval update failed');
+      if (apiRes.success && apiRes.data != null) {
+        final updated = CameraModel.fromJson(apiRes.data!);
+        final idx = NagpurDefaultCameras.defaultCameras.indexWhere((c) => c.id == id);
+        if (idx != -1) {
+          NagpurDefaultCameras.defaultCameras[idx] = updated;
+        }
+        return updated;
+      }
+    } catch (e) {
+      debugPrint('Live approval update failed ($e). Updating local registered dataset.');
     }
 
-    return CameraModel.fromJson(apiRes.data!);
+    // Local fallback update for offline/demo operation
+    final idx = NagpurDefaultCameras.defaultCameras.indexWhere((c) => c.id == id);
+    if (idx != -1) {
+      final old = NagpurDefaultCameras.defaultCameras[idx];
+      final updated = CameraModel(
+        id: old.id,
+        cameraCode: old.cameraCode,
+        serialNumber: old.serialNumber,
+        cameraName: old.cameraName,
+        cameraType: old.cameraType,
+        latitude: old.latitude,
+        longitude: old.longitude,
+        fullAddress: old.fullAddress,
+        area: old.area,
+        ward: old.ward,
+        zone: old.zone,
+        city: old.city,
+        state: old.state,
+        cardinalDirection: old.cardinalDirection,
+        directionAngle: old.directionAngle,
+        fovAngle: old.fovAngle,
+        coverageRadiusMeters: old.coverageRadiusMeters,
+        installationDate: old.installationDate,
+        surveyDate: old.surveyDate,
+        cameraStatus: old.cameraStatus,
+        verificationStatus: status,
+        rejectionReason: reason,
+        imageUrl: old.imageUrl,
+        qrCodeUrl: old.qrCodeUrl,
+        ownerName: old.ownerName,
+        ownerContact: old.ownerContact,
+        ownerType: old.ownerType,
+        surveyorId: old.surveyorId,
+        surveyorName: old.surveyorName,
+        policeStationId: old.policeStationId,
+        policeStationName: old.policeStationName,
+        createdAt: old.createdAt,
+        distanceMeters: old.distanceMeters,
+      );
+      NagpurDefaultCameras.defaultCameras[idx] = updated;
+      return updated;
+    }
+
+    throw ApiException('Camera not found in registry');
   }
 }
