@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -1986,18 +1987,48 @@ class _CameraMapScreenState extends ConsumerState<CameraMapScreen> {
               ),
             ],
             const SizedBox(height: 10),
-            CustomButton(
-              text: 'View Camera Dossier',
-              icon: Icons.assignment_outlined,
-              variant: ButtonVariant.primary,
-              height: 38,
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (ctx) => CameraDetailScreen(cameraId: camera.id),
+            Row(
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    text: 'View Camera Dossier',
+                    icon: Icons.assignment_outlined,
+                    variant: ButtonVariant.primary,
+                    height: 38,
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (ctx) => CameraDetailScreen(cameraId: camera.id),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: camera.cameraCode));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Copied camera code ${camera.cameraCode}'),
+                        duration: const Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    height: 38,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F0EE),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFD1CDC7)),
+                    ),
+                    child: const Icon(Icons.copy_rounded, size: 16, color: Color(0xFF141413)),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

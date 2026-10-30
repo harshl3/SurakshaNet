@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/state_views.dart';
@@ -110,14 +111,28 @@ class _CameraListScreenState extends ConsumerState<CameraListScreen> {
                   );
                 }
 
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  itemCount: cameras.length,
-                  separatorBuilder: (ctx, i) => const SizedBox(height: 10),
-                  itemBuilder: (ctx, i) {
-                    final camera = cameras[i];
-                    return _buildCameraCard(context, camera);
-                  },
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+                      child: Text(
+                        'Showing ${cameras.length} registered surveillance node${cameras.length == 1 ? '' : 's'}',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.slateGray),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        itemCount: cameras.length,
+                        separatorBuilder: (ctx, i) => const SizedBox(height: 10),
+                        itemBuilder: (ctx, i) {
+                          final camera = cameras[i];
+                          return _buildCameraCard(context, camera);
+                        },
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
@@ -162,6 +177,11 @@ class _CameraListScreenState extends ConsumerState<CameraListScreen> {
 
   Widget _buildCameraCard(BuildContext context, CameraModel camera) {
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: Color(0xFFE5DFD9)),
+      ),
       child: InkWell(
         onTap: () {
           Navigator.of(context).push(
@@ -172,7 +192,7 @@ class _CameraListScreenState extends ConsumerState<CameraListScreen> {
         },
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(15.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -185,6 +205,7 @@ class _CameraListScreenState extends ConsumerState<CameraListScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.softBone,
                       borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFE5DFD9)),
                     ),
                     child: const Icon(
                       Icons.videocam_rounded,
@@ -200,7 +221,7 @@ class _CameraListScreenState extends ConsumerState<CameraListScreen> {
                         Text(
                           camera.cameraName,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 14.5,
                             fontWeight: FontWeight.w700,
                             color: AppColors.inkBlack,
                             letterSpacing: -0.3,
@@ -208,14 +229,46 @@ class _CameraListScreenState extends ConsumerState<CameraListScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${camera.cameraCode} • ${camera.cameraType}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.slateGray,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        const SizedBox(height: 3),
+                        Row(
+                          children: [
+                            Text(
+                              camera.cameraCode,
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: Color(0xFFCF4500),
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            InkWell(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: camera.cameraCode));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Copied camera code ${camera.cameraCode}'),
+                                    duration: const Duration(seconds: 2),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(4),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: Icon(Icons.copy_rounded, size: 12, color: AppColors.slateGray),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '• ${camera.cameraType}',
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: AppColors.slateGray,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -229,15 +282,20 @@ class _CameraListScreenState extends ConsumerState<CameraListScreen> {
                   StatusBadge(status: camera.cameraStatus),
                   const SizedBox(width: 10),
                   if (camera.area != null && camera.area!.isNotEmpty) ...[
-                    const Icon(Icons.location_city_outlined, size: 14, color: AppColors.slateGray),
+                    const Icon(Icons.place_outlined, size: 13, color: AppColors.slateGray),
                     const SizedBox(width: 4),
-                    Text(
-                      camera.area!,
-                      style: const TextStyle(fontSize: 12, color: AppColors.slateGray),
+                    Expanded(
+                      child: Text(
+                        camera.area!,
+                        style: const TextStyle(fontSize: 11.5, color: AppColors.slateGray),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
+                  ] else ...[
+                    const Spacer(),
                   ],
-                  const Spacer(),
-                  const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.slateGray),
+                  const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.slateGray),
                 ],
               ),
             ],
